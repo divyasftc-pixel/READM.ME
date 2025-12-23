@@ -1,0 +1,83 @@
+// Auto Plant Watering System
+// Moisture sensor on A0
+// Motor Driver: Pump wired to MA channel; ENA (EA) connected to D5
+// This sketch uses only the EN (EA) pin for ON/OFF (or PWM speed).
+// Many shields pre-wire IN1/IN2 for a fixed direction. If your board exposes IN1/IN2, set them below.
+
+#define SOIL_PIN   A0
+#define ENA_PIN    5      // Arduino D5 -> EA (Enable A) on motor driver (controls Pump speed)
+/* Optional: uncomment & set if your board needs direction pins
+#define IN1_PIN    7
+#define IN2_PIN    8
+*/
+
+// ---- User-tunable thresholds (based on typical capacitive/probe sensors) ----
+// Higher analog value => drier soil (common on many basic probes). Adjust after reading Serial Monitor.
+const int DRY_THRESHOLD = 500;   // Pump turns ON above this (soil considered dry)
+const int WET_THRESHOLD = 450;   // Pump turns OFF below this (hysteresis to avoid rapid toggling)
+
+// Pump speeds
+const int PUMP_SPEED_DRY = 255;  // Full speed when watering (0-255)
+const int PUMP_SPEED_OFF = 0;
+
+bool pumpOn = false;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(ENA_PIN, OUTPUT);
+  analogWrite(ENA_PIN, PUMP_SPEED_OFF);
+
+  // If using direction pins, set a fixed forward direction
+  /* 
+  pinMode(IN1_PIN, OUTPUT);
+  pinMode(IN2_PIN, OUTPUT);
+  digitalWrite(IN1_PIN, HIGH);
+  digitalWrite(IN2_PIN, LOW);
+  */
+
+  Serial.println(F("Auto Plant Watering System Initialized"));
+  Serial.println(F("Reading moisture on A0; controlling Pump via ENA (D5)."));
+  Serial.println(F("Tip: Adjust DRY_THRESHOLD/WET_THRESHOLD after observing values."));
+}
+
+void loop() {
+  // Take multiple samples for stability
+  long sum = 0;
+  const int samples = 10;
+  for (int i = 0; i < samples; i++) {
+    sum += analogRead(SOIL_PIN);
+    delay(5);
+  }
+  int soilValue = sum / samples;
+
+  // Basic moisture percentage estimate (optional, depends on your sensor range)
+  // Calibrate these two values to your sensor for better % display:
+  const int SOIL_WET_CAL  = 350; // analog value when probe in wet soil
+  const int SOIL_DRY_CAL  = 800; // analog value when probe in air/dry
+  int moisturePct = map(soilValue, SOIL_DRY_CAL, SOIL_WET_CAL, 0, 100);
+  moisturePct = constrain(moisturePct, 0, 100);
+
+  // Hysteresis control
+  if (!pumpOn && soilValue > DRY_THRESHOLD) {
+    pumpOn = true;
+  } else if (pumpOn && soilValue < WET_THRESHOLD) {
+    pumpOn = false;
+  }
+
+  // Drive pump via ENA (PWM)
+  if (pumpOn) {
+    analogWrite(ENA_PIN, PUMP_SPEED_DRY);
+  } else {
+    analogWrite(ENA_PIN, PUMP_SPEED_OFF);
+  }
+
+  // Diagnostics
+  Serial.print(F("Soil ADC="));
+  Serial.print(soilValue);
+  Serial.print(F("  ~ Moisture%="));
+  Serial.print(moisturePct);
+  Serial.print(F("  Pump="));
+  Serial.println(pumpOn ? F("ON") : F("OFF"));
+
+  delay(500);
+}
