@@ -1,0 +1,17 @@
+// Project 1: Blink a Single DIP LED
+// Pin connections: LED + (long leg) -> D5, LED - (short leg) -> GND
+
+// Define LED pin
+int ledPin = 5;  
+
+void setup() {
+  // Set the LED pin as OUTPUT
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(ledPin, HIGH);  // Turn LED ON
+  delay(1000);                 // Wait for 1 second
+  digitalWrite(ledPin, LOW);   // Turn LED OFF
+  delay(1000);                 // Wait for 1 second
+}
