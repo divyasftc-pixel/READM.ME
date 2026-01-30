@@ -1,0 +1,81 @@
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7735.h>  // For TFT display
+#include <SPI.h>
+
+// ---- TFT Pins ----
+#define TFT_CS     10
+#define TFT_RST    8
+#define TFT_DC     9
+
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+
+// ---- Sensor Pins ----
+#define MIC_PIN    A0
+#define TOUCH_PIN  2
+#define TEMP_PIN   A1
+
+// ---- Thresholds ----
+#define SOUND_THRESHOLD 500   // Adjust if needed
+#define TEMP_THRESHOLD 30    // Celsius
+int touchState = 0;
+
+void setup() {
+  Serial.begin(9600);
+  
+  // Initialize TFT
+  tft.initR(INITR_BLACKTAB);
+  tft.fillScreen(ST77XX_BLACK);
+  tft.setTextSize(2);
+  tft.setTextColor(ST77XX_WHITE);
+
+  // Initialize Touch
+  pinMode(TOUCH_PIN, INPUT);
+
+  // Welcome message
+  tft.setCursor(10, 30);
+  tft.println("Emotion Robot");
+  delay(2000);
+  tft.fillScreen(ST77XX_BLACK);
+}
+
+void loop() {
+  // Read sensors
+  int micValue = analogRead(MIC_PIN);
+  touchState = digitalRead(TOUCH_PIN);
+  int tempValue = analogRead(TEMP_PIN);
+  
+  // Convert tempValue to Celsius (for LM35)
+  float voltage = tempValue * 5.0 / 1023.0;
+  float tempC = voltage * 100; // LM35: 10mV per degree
+
+  // Decide emotion
+  String emotion = "NORMAL";
+  
+  if(touchState == HIGH) {
+    emotion = "HAPPY";
+  } 
+  else if(micValue > SOUND_THRESHOLD) {
+    emotion = "ANGRY";
+  } 
+  else if(tempC > TEMP_THRESHOLD) {
+    emotion = "SAD";
+  }
+
+  // Show on TFT
+  tft.fillScreen(ST77XX_BLACK);
+  tft.setCursor(20, 50);
+  tft.setTextSize(3);
+  
+  if(emotion == "HAPPY") tft.setTextColor(ST77XX_YELLOW);
+  else if(emotion == "ANGRY") tft.setTextColor(ST77XX_RED);
+  else if(emotion == "SAD") tft.setTextColor(ST77XX_BLUE);
+  else tft.setTextColor(ST77XX_WHITE);
+  
+  tft.println(emotion);
+
+  Serial.print("Mic: "); Serial.print(micValue);
+  Serial.print(" Temp: "); Serial.print(tempC);
+  Serial.print(" Touch: "); Serial.println(touchState);
+
+  delay(500);
+}
