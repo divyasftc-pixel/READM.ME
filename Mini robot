@@ -1,0 +1,96 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Ultrasonic pins
+#define trigPin 8
+#define echoPin 9
+
+// Buzzer
+#define buzzer 2
+
+// Motor pins
+#define LM1 3
+#define LM2 4
+#define RM1 5
+#define RM2 6
+
+long duration;
+int distance;
+char command;
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(buzzer, OUTPUT);
+
+  pinMode(LM1, OUTPUT);
+  pinMode(LM2, OUTPUT);
+  pinMode(RM1, OUTPUT);
+  pinMode(RM2, OUTPUT);
+
+  Serial.begin(9600);
+
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();   // LCD starts blank
+}
+
+void loop() {
+
+  // Ultrasonic trigger
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+
+  // Object/person detected
+  if (distance > 0 && distance <= 50) {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Hi, Welcome to");
+    lcd.setCursor(0, 1);
+    lcd.print("JNV Peddapuram");
+
+    digitalWrite(buzzer, HIGH);
+    delay(500);
+    digitalWrite(buzzer, LOW);
+
+    delay(1500);   // avoid repeat message
+  } 
+  else {
+    lcd.clear();   // LCD remains blank when no object
+  }
+
+  // Bluetooth control
+  if (Serial.available()) {
+    command = Serial.read();
+
+    if (command == 'F') {
+      forward();
+    }
+    else if (command == 'B') {
+      backward();
+    }
+  }
+}
+
+// Motor functions
+void forward() {
+  digitalWrite(LM1, HIGH);
+  digitalWrite(LM2, LOW);
+  digitalWrite(RM1, HIGH);
+  digitalWrite(RM2, LOW);
+}
+
+void backward() {
+  digitalWrite(LM1, LOW);
+  digitalWrite(LM2, HIGH);
+  digitalWrite(RM1, LOW);
+  digitalWrite(RM2, HIGH);
+}
