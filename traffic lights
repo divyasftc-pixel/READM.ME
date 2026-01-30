@@ -1,0 +1,30 @@
+// Project 2: Traffic Light Simulation
+// Pin connections:
+// Red LED -> D5, Yellow LED -> D6, Green LED -> D7
+
+int redLED = 5;
+int yellowLED = 6;
+int greenLED = 7;
+
+void setup() {
+  pinMode(redLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+}
+
+void loop() {
+  // Red light ON
+  digitalWrite(redLED, HIGH);
+  delay(3000); // Wait 3 seconds
+  digitalWrite(redLED, LOW);
+
+  // Green light ON
+  digitalWrite(greenLED, HIGH);
+  delay(3000); // Wait 3 seconds
+  digitalWrite(greenLED, LOW);
+
+  // Yellow light ON
+  digitalWrite(yellowLED, HIGH);
+  delay(1000); // Wait 1 second
+  digitalWrite(yellowLED, LOW);
+}
