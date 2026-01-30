@@ -1,0 +1,20 @@
+\
+/*
+  Project: Laser Pointer ON/OFF
+  Board: Arduino UNO (compatible with MEGA/UNO R4 too)
+  Connections:
+    - Laser Signal -> Arduino D2
+  Behavior:
+    - Laser turns ON when Arduino runs this code.
+*/
+
+const int laserPin = 2;  // Laser SIGNAL connected to D2
+
+void setup() {
+  pinMode(laserPin, OUTPUT);
+  digitalWrite(laserPin, HIGH);  // Turn ON laser
+}
+
+void loop() {
+  // Nothing here. Laser stays ON continuously.
+}
