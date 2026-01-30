@@ -1,0 +1,34 @@
+#include <Servo.h>
+
+// Pin definitions
+#define rainPin   2    // Rain sensor digital output
+#define servoPin  3    // Servo motor
+#define buzzerPin 6    // Buzzer
+
+Servo myServo;
+
+void setup() {
+  pinMode(rainPin, INPUT);
+  pinMode(buzzerPin, OUTPUT);
+
+  myServo.attach(servoPin);
+
+  digitalWrite(buzzerPin, LOW);
+  myServo.write(0);   // Initial servo position
+}
+
+void loop() {
+  int rainState = digitalRead(rainPin);
+
+  // Rain detected (usually LOW)
+  if (rainState == LOW) {
+    myServo.write(90);           // Rotate servo
+    digitalWrite(buzzerPin, HIGH); // Buzzer ON
+  } 
+  else {
+    myServo.write(0);            // Servo back to normal
+    digitalWrite(buzzerPin, LOW);  // Buzzer OFF
+  }
+
+  delay(200);
+}
