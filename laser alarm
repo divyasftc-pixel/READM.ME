@@ -1,0 +1,39 @@
+\
+/*
+  Project: Laser Alarm (Buzzer + Laser + LDR)
+  Board: Arduino UNO (compatible with MEGA/UNO R4 too)
+
+  Connections (RMC pins):
+    - Laser Diode SIGNAL -> D2
+    - LDR Sensor SIGNAL  -> D3
+    - Buzzer SIGNAL      -> D6
+
+  Behavior:
+    - Laser is always ON (D2 HIGH).
+    - When the laser beam is blocked, LDR output changes.
+    - Arduino detects the break and turns ON the buzzer at D6.
+*/
+
+const int laserPin  = 2;  // Laser SIGNAL connected to D2
+const int ldrPin    = 3;  // LDR sensor digital output connected to D3
+const int buzzerPin = 6;  // Buzzer connected to D6
+
+void setup() {
+  pinMode(laserPin, OUTPUT);
+  pinMode(ldrPin, INPUT);
+  pinMode(buzzerPin, OUTPUT);
+
+  digitalWrite(laserPin, HIGH);  // Laser stays ON
+}
+
+void loop() {
+  int ldrState = digitalRead(ldrPin);
+
+  if (ldrState == LOW) {
+    // Beam broken -> trigger alarm
+    digitalWrite(buzzerPin, HIGH);
+  } else {
+    // Beam aligned -> no alarm
+    digitalWrite(buzzerPin, LOW);
+  }
+}
