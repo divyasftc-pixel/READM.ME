@@ -1,0 +1,43 @@
+// Project 2: Clap Counter using Sound Sensor
+// Connections:
+// Sound Sensor (digital OUT) -> D2
+// TM1637 CLK -> D9
+// TM1637 DIO -> D8
+//
+// Library needed: TM1637Display by Avishay Orpaz (Library Manager)
+
+#include <TM1637Display.h>
+
+const int SOUND_PIN = 2;   // Digital output from sound sensor
+const int TM_CLK = 9;      // TM1637 CLK
+const int TM_DIO = 8;      // TM1637 DIO
+
+TM1637Display display(TM_CLK, TM_DIO);
+
+volatile unsigned int counter = 0;
+int lastState = LOW;
+
+// Simple debounce/cooldown to avoid double counts from a single clap
+unsigned long lastTriggerMs = 0;
+const unsigned long CLAP_COOLDOWN_MS = 250; // adjust if needed (200–400ms)
+
+void setup() {
+  pinMode(SOUND_PIN, INPUT);
+  display.setBrightness(0x0f);
+  display.showNumberDec(0, true);
+}
+
+void loop() {
+  int current = digitalRead(SOUND_PIN);
+  unsigned long now = millis();
+
+  // Detect rising edge and respect cooldown
+  if (current == HIGH && lastState == LOW && (now - lastTriggerMs) > CLAP_COOLDOWN_MS) {
+    lastTriggerMs = now;
+    counter++;
+    if (counter > 9999) counter = 0;    // wrap around
+    display.showNumberDec(counter, true);
+  }
+
+  lastState = current;
+}
