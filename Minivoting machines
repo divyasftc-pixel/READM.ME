@@ -1,0 +1,67 @@
+\
+/*
+  Project: Mini Voting Machine (Push Buttons + Display)
+  Board: Arduino UNO (compatible with MEGA/UNO R4 too)
+
+  Connections (RMC pins):
+    - Button 1           -> D5
+    - Button 2           -> D6
+    - TM1637 CLK         -> D9
+    - TM1637 DIO         -> D8
+
+  Behavior:
+    - Button 1 = Candidate A, increments voteA count.
+    - Button 2 = Candidate B, increments voteB count.
+    - Display shows current votes in format: AB##
+      Example: 23 means A=2 votes, B=3 votes.
+*/
+
+#include <TM1637Display.h>
+
+const int button1Pin = 5;
+const int button2Pin = 6;
+const int clkPin = 9;
+const int dioPin = 8;
+
+TM1637Display display(clkPin, dioPin);
+
+int votesA = 0;
+int votesB = 0;
+
+int lastButton1 = LOW;
+int lastButton2 = LOW;
+
+void setup() {
+  pinMode(button1Pin, INPUT);
+  pinMode(button2Pin, INPUT);
+  display.setBrightness(0x0f); // Max brightness
+  display.showNumberDec(0);    // Start with 0
+}
+
+void loop() {
+  int reading1 = digitalRead(button1Pin);
+  int reading2 = digitalRead(button2Pin);
+
+  // Button 1 -> Candidate A
+  if (reading1 == HIGH && lastButton1 == LOW) {
+    votesA++;
+    updateDisplay();
+    delay(200); // Debounce
+  }
+
+  // Button 2 -> Candidate B
+  if (reading2 == HIGH && lastButton2 == LOW) {
+    votesB++;
+    updateDisplay();
+    delay(200); // Debounce
+  }
+
+  lastButton1 = reading1;
+  lastButton2 = reading2;
+}
+
+void updateDisplay() {
+  // Format votes as two digits: AB (max 99 each)
+  int number = (votesA % 100) * 100 + (votesB % 100);
+  display.showNumberDecEx(number, 0, true);
+}
