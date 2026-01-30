@@ -1,0 +1,54 @@
+// Project 3: Dice Simulator (Random 1–6)
+// Connections:
+// Tilt Sensor -> D2  (used as the 'shake/press' trigger)
+// TM1637 CLK -> D9
+// TM1637 DIO -> D8
+//
+// Library needed: TM1637Display by Avishay Orpaz (Library Manager)
+
+#include <TM1637Display.h>
+
+const int TILT_PIN = 2;   // digital tilt sensor
+const int TM_CLK = 9;     // TM1637 CLK
+const int TM_DIO = 8;     // TM1637 DIO
+
+TM1637Display display(TM_CLK, TM_DIO);
+
+int lastTilt = LOW;
+unsigned long lastTriggerMs = 0;
+const unsigned long DEBOUNCE_MS = 250;
+
+void setup() {
+  pinMode(TILT_PIN, INPUT);
+  display.setBrightness(0x0f);
+  display.showNumberDec(0, true);  // 0000 initially
+
+  // Seed RNG with a floating analog pin for more randomness
+  randomSeed(analogRead(A0));
+}
+
+void rollAnimation(unsigned long durationMs = 600) {
+  // Simple rolling animation before showing result
+  unsigned long start = millis();
+  while (millis() - start < durationMs) {
+    int tempVal = random(1, 7);
+    display.showNumberDec(tempVal, false); // show 1..6
+    delay(60);
+  }
+}
+
+void loop() {
+  int tiltState = digitalRead(TILT_PIN);
+  unsigned long now = millis();
+
+  // Detect rising edge (LOW -> HIGH) with debounce
+  if (tiltState == HIGH && lastTilt == LOW && (now - lastTriggerMs) > DEBOUNCE_MS) {
+    lastTriggerMs = now;
+
+    rollAnimation();                 // fun pre-roll
+    int dice = random(1, 7);         // 1..6
+    display.showNumberDec(dice, false);
+  }
+
+  lastTilt = tiltState;
+}
