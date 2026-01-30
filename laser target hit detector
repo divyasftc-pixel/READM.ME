@@ -1,0 +1,37 @@
+\
+/*
+  Project: Laser Target Hit Detector 🎯
+  Board: Arduino UNO (compatible with MEGA/UNO R4 too)
+  
+  Connections (RMC pins):
+    - Laser Diode SIGNAL -> D2
+    - LDR Sensor SIGNAL  -> D3
+    - LED (1W SMD)       -> D5
+  
+  Behavior:
+    - Laser stays ON (D2 set HIGH).
+    - When laser beam hits LDR sensor (D3 reads HIGH), LED on D5 turns ON.
+    - Otherwise, LED stays OFF.
+*/
+
+const int laserPin = 2;  // Laser SIGNAL connected to D2
+const int ldrPin   = 3;  // LDR sensor digital output connected to D3
+const int ledPin   = 5;  // LED connected to D5
+
+void setup() {
+  pinMode(laserPin, OUTPUT);
+  pinMode(ldrPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+
+  digitalWrite(laserPin, HIGH);  // Turn ON the laser diode
+}
+
+void loop() {
+  int ldrState = digitalRead(ldrPin);
+
+  if (ldrState == HIGH) {
+    digitalWrite(ledPin, HIGH);   // Laser beam detected on LDR -> HIT!
+  } else {
+    digitalWrite(ledPin, LOW);    // No hit
+  }
+}
