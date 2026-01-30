@@ -1,0 +1,39 @@
+// Project: Light Intensity Counter on 7-Segment (TM1637)
+// Connections:
+// LDR -> A3
+// TM1637 7-Segment -> CLK D8, DIO D9
+//
+// Library needed: TM1637Display by Avishay Orpaz (install via Library Manager)
+
+#include <TM1637Display.h>
+
+const int LDR_PIN = A3;
+const int CLK = 8;   // TM1637 CLK
+const int DIO = 9;   // TM1637 DIO
+
+TM1637Display display(CLK, DIO);
+
+void setup() {
+  display.setBrightness(0x0f);         // Max brightness (0x00 to 0x0f)
+  display.showNumberDec(0, true);      // Clear / show 0000
+  pinMode(LDR_PIN, INPUT);
+}
+
+void loop() {
+  // Take multiple samples to reduce flicker
+  long sum = 0;
+  const int samples = 10;
+  for (int i = 0; i < samples; i++) {
+    sum += analogRead(LDR_PIN);        // 0..1023
+    delay(2);
+  }
+  int raw = sum / samples;
+  
+  // Map raw LDR value (0..1023) to 0..9999 for display
+  int dispValue = map(raw, 0, 1023, 0, 9999);
+  
+  // Show value with leading zeros so it stays stable (e.g., 0045)
+  display.showNumberDec(dispValue, true);  // 'true' = leading zeros ON
+  
+  delay(50);
+}
