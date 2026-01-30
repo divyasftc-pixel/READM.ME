@@ -1,0 +1,24 @@
+// Project 7: Simple Buzzer Melody
+// Connections:
+// Buzzer -> D6
+
+int buzzer = 6;
+
+// Notes of the melody (frequency in Hz)
+int melody[] = {262, 294, 330, 349, 392, 440, 494, 523}; // C D E F G A B C
+
+// Note durations: 4 = quarter note, 8 = eighth note, etc.
+int noteDurations[] = {4, 4, 4, 4, 4, 4, 4, 4};
+
+void setup() {
+  // Nothing needed here
+}
+
+void loop() {
+  for (int i = 0; i < 8; i++) {
+    int duration = 1000 / noteDurations[i]; 
+    tone(buzzer, melody[i], duration);
+    delay(duration * 1.30); // Delay between notes
+  }
+  delay(2000); // Pause before replaying melody
+}
