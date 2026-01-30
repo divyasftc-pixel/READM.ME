@@ -1,0 +1,29 @@
+// Project 3: Laser Security System
+// Connections:
+// Laser Diode -> D2
+// LDR -> D3 (Digital input)
+// Buzzer -> D5
+
+int laserPin = 2;
+int ldrPin = 3;
+int buzzer = 5;
+
+void setup() {
+  pinMode(laserPin, OUTPUT);
+  pinMode(ldrPin, INPUT);
+  pinMode(buzzer, OUTPUT);
+
+  digitalWrite(laserPin, HIGH); // Keep laser ON continuously
+}
+
+void loop() {
+  int ldrState = digitalRead(ldrPin);
+
+  if (ldrState == LOW) {
+    // Laser beam blocked -> Alarm ON
+    digitalWrite(buzzer, HIGH);
+  } else {
+    // Laser beam detected -> Alarm OFF
+    digitalWrite(buzzer, LOW);
+  }
+}
