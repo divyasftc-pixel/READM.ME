@@ -1,0 +1,22 @@
+// Project 3: Hall Sensor → Magnet Detector LED
+// Connections:
+// Hall Sensor Output -> AD Switch Output -> D2
+// LED -> D5
+
+int hallPin = 2;
+int ledPin = 5;
+
+void setup() {
+  pinMode(hallPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  int hallState = digitalRead(hallPin);
+
+  if (hallState == LOW) {
+    digitalWrite(ledPin, HIGH); // Magnet detected -> LED ON
+  } else {
+    digitalWrite(ledPin, LOW);  // No magnet -> LED OFF
+  }
+}
