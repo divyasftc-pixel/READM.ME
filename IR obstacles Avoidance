@@ -1,0 +1,22 @@
+// Project 1: IR Obstacle Avoidance → LED Indicator
+// Connections:
+// IR Sensor -> D2
+// LED -> D5
+
+int irPin = 2;
+int ledPin = 5;
+
+void setup() {
+  pinMode(irPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  int irState = digitalRead(irPin);
+
+  if (irState == LOW) {
+    digitalWrite(ledPin, HIGH); // Obstacle detected -> LED ON
+  } else {
+    digitalWrite(ledPin, LOW);  // No obstacle -> LED OFF
+  }
+}
