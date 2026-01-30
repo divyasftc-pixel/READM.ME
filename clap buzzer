@@ -1,0 +1,34 @@
+// Project 9: Clap to Turn ON the Buzzer and LED
+// Connections:
+// Sound Sensor -> A0 (via AD Switch)
+// Buzzer -> D5
+// LED -> D6
+
+int soundSensor = A0;
+int buzzer = 5;
+int led = 6;
+
+int state = 0;          // 0 = OFF, 1 = ON
+int clapThreshold = 500; // Adjust based on sensor sensitivity
+
+void setup() {
+  pinMode(buzzer, OUTPUT);
+  pinMode(led, OUTPUT);
+}
+
+void loop() {
+  int sensorValue = analogRead(soundSensor);
+
+  if (sensorValue > clapThreshold) {
+    state = !state;  // Toggle state on clap
+    delay(300);      // Debounce delay
+  }
+
+  if (state == 1) {
+    digitalWrite(buzzer, HIGH);
+    digitalWrite(led, HIGH);
+  } else {
+    digitalWrite(buzzer, LOW);
+    digitalWrite(led, LOW);
+  }
+}
