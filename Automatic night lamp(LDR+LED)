@@ -1,0 +1,22 @@
+// Project 1: Automatic Night Lamp (LDR + LED)
+// Connections:
+// LDR -> D2 (Digital input, HIGH = light, LOW = dark)
+// LED -> D5
+
+int ldrPin = 2;
+int ledPin = 5;
+
+void setup() {
+  pinMode(ldrPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  int ldrState = digitalRead(ldrPin);
+
+  if (ldrState == LOW) {
+    digitalWrite(ledPin, HIGH);  // Turn ON LED in dark
+  } else {
+    digitalWrite(ledPin, LOW);   // Turn OFF LED in light
+  }
+}
