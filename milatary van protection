@@ -1,0 +1,42 @@
+// Pin definitions
+const int gasPin    = 2;   // Gas / Smoke sensor
+const int flamePin  = 3;   // Flame sensor
+const int irPin     = 4;   // IR sensor
+const int buzzerPin = 5;   // Buzzer
+const int fanPin    = 6;   // Fan (via relay / driver)
+
+void setup() {
+  pinMode(gasPin, INPUT);
+  pinMode(flamePin, INPUT);
+  pinMode(irPin, INPUT);
+
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(fanPin, OUTPUT);
+
+  // Initial state
+  digitalWrite(buzzerPin, LOW);
+  digitalWrite(fanPin, LOW);
+}
+
+void loop() {
+  int gasState   = digitalRead(gasPin);
+  int flameState = digitalRead(flamePin);
+  int irState    = digitalRead(irPin);
+
+  // 🔥 Fire + Smoke detected → Fan ON
+  // Most sensors are ACTIVE LOW
+  if (gasState == LOW && flameState == LOW) {
+    digitalWrite(fanPin, HIGH);   // Fan ON
+  } else {
+    digitalWrite(fanPin, LOW);    // Fan OFF
+  }
+
+  // 🚶 Object detected → Buzzer ON
+  if (irState == LOW) {
+    digitalWrite(buzzerPin, HIGH);
+  } else {
+    digitalWrite(buzzerPin, LOW);
+  }
+
+  delay(100);
+}
