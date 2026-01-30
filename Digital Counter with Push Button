@@ -1,0 +1,38 @@
+// Project: Digital Counter with Push Button
+// Connections:
+// Push Button -> D5
+// TM1637 CLK -> D9
+// TM1637 DIO -> D8
+//
+// Library needed: TM1637Display by Avishay Orpaz
+
+#include <TM1637Display.h>
+
+const int buttonPin = 5;
+const int CLK = 9;
+const int DIO = 8;
+
+TM1637Display display(CLK, DIO);
+
+int counter = 0;
+int lastButton = LOW;
+
+void setup() {
+  pinMode(buttonPin, INPUT);
+  display.setBrightness(0x0f);      // Max brightness
+  display.showNumberDec(0, true);   // Show 0000 initially
+}
+
+void loop() {
+  int buttonState = digitalRead(buttonPin);
+
+  // Detect rising edge (LOW -> HIGH)
+  if (buttonState == HIGH && lastButton == LOW) {
+    counter++;
+    if (counter > 9999) counter = 0; // Reset after 9999
+    display.showNumberDec(counter, true);
+    delay(300); // debounce delay
+  }
+
+  lastButton = buttonState;
+}
